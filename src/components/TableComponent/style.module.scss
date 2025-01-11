@@ -1,0 +1,20 @@
+
+.tableHead {
+  @apply bg-gray-400;
+}
+
+.tableHeadCell {
+  @apply text-white border-r-[1px] border-gray-200;
+}
+
+.tableRow {
+  @apply cursor-pointer hover:bg-gray-300;
+}
+
+.tableCell, .tableCellClickable {
+  @apply border-r-gray-200 border-r-[1px] text-center last:border-r-0;
+}
+
+.tableCellClickable:hover {
+  @apply bg-gray-500 text-white
+}
