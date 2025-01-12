@@ -7,11 +7,11 @@
 }
 
 .cardWrapper {
-  @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg p-4 bg-gray-400;
+  @apply fixed border-2 shadow-[10px_10px_17px_0px_rgba(0,0,0,0.75)] shadow-gray-400 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg p-6;
 }
 
 .cardText {
-  @apply text-white uppercase
+  @apply text-lg font-medium text-gray-700 uppercase
 }
 
 
