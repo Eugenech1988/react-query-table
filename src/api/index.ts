@@ -40,7 +40,7 @@ schoolApi.interceptors.response.use(
       alert(message);
     } else if (error.request) {
       if (error.message.includes('CORS')) {
-        console.error('Помилка CORS: Сервер не дозволяє доступ з цієї домену.');
+        console.error('Помилка CORS: Сервер не дозволяє доступ з цього домену.');
         // alert('Сервер не дозволяє доступ з цієї домену (CORS). Перевірте налаштування серверу.');
       } else {
         console.error('Помилка: Сервер не відповідає.');
