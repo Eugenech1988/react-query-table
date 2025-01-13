@@ -18,6 +18,8 @@ const SchoolarCard: React.FC = () => {
     navigate('/');
   }
 
+  if (!schoolar) return null;
+
   return (
     <div className={styles.wrapper}>
       <button className={styles.backBtn} onClick={handleBackClick}>{`< Назад`}</button>
