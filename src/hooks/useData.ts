@@ -50,7 +50,7 @@ export const useRemoveLesson = () => {
       //@ts-ignore
       handleCacheError(queryClient, queryKey, context);
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
   });
@@ -87,7 +87,7 @@ export const useCreateLesson = () => {
       // @ts-ignore
       handleCacheError(queryClient, queryKey, context);
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
   });
