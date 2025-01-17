@@ -2,23 +2,31 @@ import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
 import { addLesson, removeLesson, fetchLessons, fetchColumns, fetchSchoolboys } from '@/api';
 import { ILessonsItem } from '@/types';
 
-const updateCache = (
+interface ILessonsData {
+  Items: ILessonsItem[];
+}
+
+const updateCache = <T>(
   queryClient: ReturnType<typeof useQueryClient>,
   queryKey: string,
-  updater: (oldData: any) => any
-) => {
-  const previousData = queryClient.getQueryData<{ Items: ILessonsItem[] }>([queryKey]);
-  queryClient.setQueryData([queryKey], (old: any) => updater(old));
+  updater: (oldData: T) => T
+): T | undefined => {
+  const previousData = queryClient.getQueryData<T>([queryKey]);
+
+  if (previousData) {
+    queryClient.setQueryData([queryKey], updater(previousData));
+  }
+
   return previousData;
 };
 
-const handleCacheError = (
+const handleCacheError = <T>(
   queryClient: ReturnType<typeof useQueryClient>,
   queryKey: string,
-  context?: { previousData?: any }
-) => {
+  context?: { previousData?: T }
+): void => {
   if (context?.previousData) {
-    queryClient.setQueryData([queryKey], context.previousData);
+    queryClient.setQueryData<T>([queryKey], context.previousData);
   }
 };
 
@@ -31,7 +39,7 @@ export const useRemoveLesson = () => {
     onMutate: async (variables: ILessonsItem) => {
       await queryClient.cancelQueries({ queryKey: [queryKey] });
 
-      return updateCache(queryClient, queryKey, (old) => {
+      return updateCache<ILessonsData>(queryClient, queryKey, (old) => {
         if (!old || !Array.isArray(old.Items)) {
           console.error('Invalid data format:', old);
           return old;
@@ -39,7 +47,7 @@ export const useRemoveLesson = () => {
         return {
           ...old,
           Items: old.Items.filter(
-            (lesson: ILessonsItem) =>
+            (lesson) =>
               lesson.SchoolboyId !== variables.SchoolboyId ||
               lesson.ColumnId !== variables.ColumnId
           ),
@@ -47,14 +55,14 @@ export const useRemoveLesson = () => {
       });
     },
     onError: (_err, _variables, context) => {
-      //@ts-ignore
-      handleCacheError(queryClient, queryKey, context);
+      handleCacheError<ILessonsData>(queryClient, queryKey, { previousData: context });
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
   });
 };
+
 
 export const useCreateLesson = () => {
   const queryClient = useQueryClient();
@@ -65,16 +73,16 @@ export const useCreateLesson = () => {
     onMutate: async (variables: ILessonsItem) => {
       await queryClient.cancelQueries({ queryKey: [queryKey] });
 
-      return updateCache(queryClient, queryKey, (old) => {
+      return updateCache<ILessonsData>(queryClient, queryKey, (old) => {
         if (!old || !Array.isArray(old.Items)) {
           console.error('Invalid data format:', old);
           return old;
         }
-        const newLesson = {
+        const newLesson: ILessonsItem = {
           ColumnId: variables.ColumnId,
           SchoolboyId: variables.SchoolboyId,
           Title: 'Н',
-          Id: `${Date.now()}`,
+          Id: Date.now(), // Ensure `Id` is of the correct type if not a string
         };
 
         return {
@@ -84,10 +92,9 @@ export const useCreateLesson = () => {
       });
     },
     onError: (_err, _variables, context) => {
-      // @ts-ignore
-      handleCacheError(queryClient, queryKey, context);
+      handleCacheError<ILessonsData>(queryClient, queryKey, { previousData: context });
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
   });
@@ -100,7 +107,12 @@ export const useTableData = () => {
     { queryKey: ['lessons'], queryFn: fetchLessons },
   ];
 
-  const queries = useQueries({ queries: queriesConfig });
+  const queries = useQueries({
+    queries: queriesConfig.map((config) => ({
+      ...config,
+      staleTime: 5 * 60 * 1000, // Example: Setting staleTime for all queries
+    })),
+  });
 
   const isLoading = queries.some((query) => query.isLoading);
   const isError = queries.some((query) => query.isError);
@@ -108,3 +120,4 @@ export const useTableData = () => {
 
   return { isLoading, isError, data };
 };
+
