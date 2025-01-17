@@ -18,7 +18,7 @@ const TableComponent = () => {
   const { isLoading, isError, data } = useTableData();
 
   if (isLoading) return <span>Loading...</span>;
-  if (isError || isRemoveError || isAddError) return <div>Error: {removeError?.message || addError?.message || 'occurred'}</div>;
+  if (isError || isRemoveError || isAddError) return <span>Error: {removeError?.message || addError?.message || 'occurred'}</span>;
 
   const schoolars = data && data[0]?.Items;
   const columns = data && data[1]?.Items;

@@ -52,6 +52,7 @@ export const useRemoveLesson = () => {
       });
     },
     onError: (_err, _variables, context) => {
+      console.log(_err);
       handleCacheError<ILessonsData>(queryClient, queryKey, { previousData: context });
     },
     onSettled: () => {
@@ -89,6 +90,7 @@ export const useCreateLesson = () => {
       });
     },
     onError: (_err, _variables, context) => {
+      console.log(_err);
       handleCacheError<ILessonsData>(queryClient, queryKey, { previousData: context });
     },
     onSettled: () => {
