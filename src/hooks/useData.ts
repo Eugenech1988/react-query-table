@@ -1,10 +1,7 @@
 import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
 import { addLesson, removeLesson, fetchLessons, fetchColumns, fetchSchoolboys } from '@/api';
-import { ILessonsItem } from '@/types';
+import { ILessonsItem, ILessonsData } from '@/types';
 
-interface ILessonsData {
-  Items: ILessonsItem[];
-}
 
 const updateCache = <T>(
   queryClient: ReturnType<typeof useQueryClient>,

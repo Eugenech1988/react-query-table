@@ -16,3 +16,7 @@ export interface IColumnsItem {
   Id: number,
   Title: string
 }
+
+export interface ILessonsData {
+  Items: ILessonsItem[];
+}
