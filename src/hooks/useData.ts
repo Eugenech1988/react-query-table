@@ -110,7 +110,7 @@ export const useTableData = () => {
   const queries = useQueries({
     queries: queriesConfig.map((config) => ({
       ...config,
-      staleTime: 5 * 60 * 1000, // Example: Setting staleTime for all queries
+      staleTime: 5 * 60 * 1000,
     })),
   });
 
