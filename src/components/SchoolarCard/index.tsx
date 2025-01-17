@@ -1,9 +1,9 @@
-import React, { useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSchoolar } from '@/SchoolarContext.tsx';
 import styles from './style.module.scss'
 
-const SchoolarCard: React.FC = () => {
+const SchoolarCard = () => {
   const navigate = useNavigate();
   const { schoolar, setSchoolar } = useSchoolar();
 

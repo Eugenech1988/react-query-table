@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './style.module.scss';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TablePagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { useSchoolar } from '@/SchoolarContext.tsx';
 import { ILessonsItem, IColumnsItem, ISchoolboysItem } from '@/types';
 import { useCreateLesson, useRemoveLesson, useTableData } from '@/hooks/useData.ts';
 
-const TableComponent: React.FC = () => {
+const TableComponent = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
