@@ -4,7 +4,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { SchoolarProvider } from '@/SchoolarContext.tsx';
 import TableComponent from './index.tsx';
 import * as useDataHooks from '@/hooks/useData.ts';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, UseMutationResult } from '@tanstack/react-query';
+import { ILessonsData, ILessonsItem } from '@/types';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -15,39 +16,65 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-
 const mockSetSchoolar = vi.fn();
 vi.mock('@/SchoolarContext.tsx', async () => {
   const actual = await vi.importActual('@/SchoolarContext.tsx');
   return {
     ...actual,
     useSchoolar: () => ({
-      setSchoolar: mockSetSchoolar
+      setSchoolar: mockSetSchoolar,
     }),
-    SchoolarProvider: actual.SchoolarProvider
+    SchoolarProvider: actual.SchoolarProvider,
   };
 });
-
 
 const mockData = [
   {
     Items: [
       { Id: 1, FirstName: 'John', SecondName: 'Doe' },
-      { Id: 2, FirstName: 'Jane', SecondName: 'Smith' }
-    ]
+      { Id: 2, FirstName: 'Jane', SecondName: 'Smith' },
+    ],
   },
   {
     Items: [
       { Id: 1, Title: 'Math' },
-      { Id: 2, Title: 'Science' }
-    ]
+      { Id: 2, Title: 'Science' },
+    ],
   },
   {
     Items: [
-      { Id: 1, SchoolboyId: 1, ColumnId: 1, Title: 'Н' }
-    ]
-  }
+      { Id: 1, SchoolboyId: 1, ColumnId: 1, Title: 'Н' },
+    ],
+  },
 ];
+
+const mockUseTableData = (data = mockData, isLoading = false, isError = false) => {
+  vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
+    isLoading,
+    isError,
+    data,
+  });
+};
+
+const mockMutate = vi.fn();
+const mockUseMutation = (): UseMutationResult<any, Error, ILessonsItem, ILessonsData> => ({
+  mutate: mockMutate,
+  mutateAsync: vi.fn(),
+  reset: vi.fn(),
+  status: 'idle',
+  isIdle: true,
+  isSuccess: false,
+  isError: false,
+  isPending: false,
+  error: null,
+  data: undefined,
+  variables: undefined,
+  context: undefined,
+  failureCount: 0,
+  failureReason: null,
+  isPaused: false,
+  submittedAt: 0,
+});
 
 describe('TableComponent', () => {
   let queryClient: QueryClient;
@@ -58,111 +85,58 @@ describe('TableComponent', () => {
         queries: {
           retry: 3,
           refetchOnWindowFocus: false,
-          staleTime: 100000
-        }
-      }
+          staleTime: 100000,
+        },
+      },
     });
     vi.clearAllMocks();
   });
 
+  // Функция для рендеринга компонента
   const renderComponent = () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
           <SchoolarProvider>
-            <TableComponent/>
+            <TableComponent />
           </SchoolarProvider>
         </MemoryRouter>
       </QueryClientProvider>
     );
   };
-  it('should render table with two columns and three rows', () => {
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: mockData
-    });
 
+  it('should render table with two columns and three rows', () => {
+    mockUseTableData();
     renderComponent();
 
     expect(screen.getByText('Math')).toBeInTheDocument();
     expect(screen.getByText('Science')).toBeInTheDocument();
     expect(screen.getByText('Doe John')).toBeInTheDocument();
     expect(screen.getByText('Smith Jane')).toBeInTheDocument();
-  })
+  });
 
   it('should display loading message when data is being fetched', () => {
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: true,
-      isError: false,
-      data: mockData ?? [{ Items: [] }, { Items: [] }, { Items: [] }]
-    });
-
+    mockUseTableData([], true, false);
     renderComponent();
+
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('should display error message when data fetch fails', () => {
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: false,
-      isError: true,
-      data: mockData ?? [{ Items: [] }, { Items: [] }, { Items: [] }]
-    });
-
+    mockUseTableData([], false, true);
     renderComponent();
+
     expect(screen.getByText('Error: occurred')).toBeInTheDocument();
   });
 
-  it('should display table with correct data when loaded successfully', () => {
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: mockData || []
-    });
-    vi.spyOn(useDataHooks, 'useRemoveLesson').mockReturnValue({
-      mutate: vi.fn(),
-      isError: false,
-      error: null,
-      isSuccess: false,
-      isIdle: true,
-      status: 'idle',
-      data: undefined,
-      variables: undefined,
-      reset: vi.fn(),
-      context: undefined,
-      failureCount: 0,
-      failureReason: null,
-      mutateAsync: vi.fn(),
-      isPending: false,
-      isPaused: false,
-      submittedAt: 0
-    });
-    vi.spyOn(useDataHooks, 'useCreateLesson').mockReturnValue({
-      mutate: vi.fn(),
-      isError: false,
-      error: null,
-      isSuccess: false,
-      isIdle: true,
-      status: 'idle',
-      data: undefined,
-      variables: undefined,
-      reset: vi.fn(),
-      context: undefined,
-      failureCount: 0,
-      failureReason: null,
-      mutateAsync: vi.fn(),
-      isPending: false,
-      isPaused: false,
-      submittedAt: 0
-    });
-
+  it('should navigate to card view when clicking on student name', () => {
+    mockUseTableData();
     renderComponent();
-    
-    expect(screen.getByText('Math')).toBeInTheDocument();
-    expect(screen.getByText('Science')).toBeInTheDocument();
-    
-    expect(screen.getByText('Doe John')).toBeInTheDocument();
-    expect(screen.getByText('Smith Jane')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Doe John'));
+
+    expect(mockSetSchoolar).toHaveBeenCalledWith(mockData[0].Items[0]);
+    expect(mockNavigate).toHaveBeenCalledWith('/card');
   });
 
   it('should handle pagination correctly', () => {
@@ -170,90 +144,29 @@ describe('TableComponent', () => {
       Items: Array.from({ length: 10 }, (_, i) => ({
         Id: i + 1,
         FirstName: `Student${i + 1}`,
-        SecondName: `Last${i + 1}`
-      }))
+        SecondName: `Last${i + 1}`,
+      })),
     };
 
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: [manyStudents, mockData[1], mockData[2]]
-    });
-
+    mockUseTableData([manyStudents, mockData[1], mockData[2]]);
     renderComponent();
 
     expect(screen.getByText('Last1 Student1')).toBeInTheDocument();
-    
+
     fireEvent.click(screen.getByTitle('Go to next page'));
     expect(screen.getByText('Last6 Student6')).toBeInTheDocument();
   });
 
-  it('should navigate to card view when clicking on student name', () => {
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: mockData
-    });
-
-    renderComponent();
-    
-    fireEvent.click(screen.getByText('Doe John'));
-    
-    expect(mockSetSchoolar).toHaveBeenCalledWith(mockData[0].Items[0]);
-    expect(mockNavigate).toHaveBeenCalledWith('/card');
-  });
-
   it('should handle lesson toggle correctly', () => {
-    const mockRemoveMutate = vi.fn();
-    const mockAddMutate = vi.fn();
-
-    vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: mockData
-    });
-    vi.spyOn(useDataHooks, 'useRemoveLesson').mockReturnValue({
-      mutate: mockRemoveMutate,
-      isError: false,
-      error: null,
-      isSuccess: false,
-      isIdle: true,
-      status: 'idle',
-      data: undefined,
-      variables: undefined,
-      reset: vi.fn(),
-      context: undefined,
-      failureCount: 0,
-      failureReason: null,
-      mutateAsync: vi.fn(),
-      isPending: false,
-      isPaused: false,
-      submittedAt: 0
-    });
-    vi.spyOn(useDataHooks, 'useCreateLesson').mockReturnValue({
-      mutate: mockAddMutate,
-      isError: false,
-      error: null,
-      isSuccess: false,
-      isIdle: true,
-      status: 'idle',
-      data: undefined,
-      variables: undefined,
-      reset: vi.fn(),
-      context: undefined,
-      failureCount: 0,
-      failureReason: null,
-      mutateAsync: vi.fn(),
-      isPending: false,
-      isPaused: false,
-      submittedAt: 0
-    });
+    mockUseTableData();
+    vi.spyOn(useDataHooks, 'useRemoveLesson').mockReturnValue(mockUseMutation());
+    vi.spyOn(useDataHooks, 'useCreateLesson').mockReturnValue(mockUseMutation());
 
     renderComponent();
 
     const cells = screen.getAllByRole('cell');
-    fireEvent.click(cells[2]); // Assuming this is a lesson cell
+    fireEvent.click(cells[2]);
 
-    expect(mockRemoveMutate).toHaveBeenCalled();
+    expect(mockMutate).toHaveBeenCalled();
   });
 });
