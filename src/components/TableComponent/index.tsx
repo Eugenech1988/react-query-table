@@ -20,9 +20,9 @@ const TableComponent = () => {
   if (isLoading) return <span>Loading...</span>;
   if (isError || isRemoveError || isAddError) return <span>Error: {removeError?.message || addError?.message || 'occurred'}</span>;
 
-  const schoolars = data && data[0]?.Items;
-  const columns = data && data[1]?.Items;
-  const lessons = data && data[2]?.Items;
+  const schoolars = data[0]?.Items;
+  const columns = data[1]?.Items;
+  const lessons = data[2]?.Items;
 
   const handleChangePage = (_event: unknown, newPage: number) => setPage(newPage);
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
