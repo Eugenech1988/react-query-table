@@ -4,10 +4,13 @@ import SchoolarCard from './index.tsx';
 import { useSchoolar } from '@/SchoolarContext.tsx';
 
 const mockNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: () => mockNavigate, // Mock useNavigate to return mockNavigate
-}));
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 vi.mock('@/SchoolarContext.tsx', () => ({
   useSchoolar: vi.fn(),
