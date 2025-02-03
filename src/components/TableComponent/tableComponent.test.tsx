@@ -92,7 +92,6 @@ describe('TableComponent', () => {
     vi.clearAllMocks();
   });
 
-  // Функция для рендеринга компонента
   const renderComponent = () => {
     render(
       <QueryClientProvider client={queryClient}>
