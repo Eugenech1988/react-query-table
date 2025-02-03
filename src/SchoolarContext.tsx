@@ -1,21 +1,15 @@
 import React, { createContext, useState, useContext } from 'react';
-
-interface Schoolar {
-  Id: number,
-  FirstName: string | null,
-  SecondName: string | null,
-  LastName: string | null,
-}
+import { ISchoolboysItem } from './types';
 
 interface ShoolarContextType {
-  schoolar: Schoolar | null;
-  setSchoolar: (schoolar: Schoolar | null) => void;
+  schoolar: ISchoolboysItem | null;
+  setSchoolar: (schoolar: ISchoolboysItem | null) => void;
 }
 
 export const SchoolarContext = createContext<ShoolarContextType | null>(null);
 
 export const SchoolarProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-  const [schoolar, setSchoolar] = useState<Schoolar | null>(null);
+  const [schoolar, setSchoolar] = useState<ISchoolboysItem | null>(null);
   return (
     <SchoolarContext.Provider value={{ schoolar, setSchoolar }}>
       {children}
