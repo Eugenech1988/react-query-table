@@ -39,7 +39,6 @@ describe('SchoolarCard', () => {
     expect(screen.getByText('Doe')).toBeInTheDocument();
     expect(screen.getByText('Smith')).toBeInTheDocument();
 
-    // Проверяем, что кнопка "Назад" отображается
     expect(screen.getByText('< Назад')).toBeInTheDocument();
   });
 
