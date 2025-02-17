@@ -52,7 +52,6 @@ schoolApi.interceptors.response.use(
   }
 );
 
-// Типизация функций
 export const fetchData = <T>(endpoint: string): Promise<T> =>
   schoolApi.get<T>(endpoint).then((res: AxiosResponse<T>) => res.data);
 
