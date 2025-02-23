@@ -20,3 +20,7 @@ export interface IColumnsItem {
 export interface ILessonsData {
   Items: ILessonsItem[];
 }
+
+export interface ITableData {
+  Items: ISchoolboysItem[] | IColumnsItem[] | ILessonsItem[];
+}

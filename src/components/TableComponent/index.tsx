@@ -3,7 +3,7 @@ import styles from './style.module.scss';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TablePagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSchoolar } from '@/SchoolarContext.tsx';
-import { ILessonsItem, IColumnsItem, ISchoolboysItem } from '@/types';
+import { ILessonsItem, IColumnsItem, ISchoolboysItem, ITableData } from '@/types';
 import { useCreateLesson, useRemoveLesson, useTableData } from '@/hooks/useData.ts';
 
 const TableComponent = () => {
@@ -20,9 +20,15 @@ const TableComponent = () => {
   if (isLoading) return <span>Loading...</span>;
   if (isError || isRemoveError || isAddError) return <span>Error: {removeError?.message || addError?.message || 'occurred'}</span>;
 
-  const schoolars = data[0]?.Items;
-  const columns = data[1]?.Items;
-  const lessons = data[2]?.Items;
+  const tableData = data as unknown as [ITableData, ITableData, ITableData];
+
+  if (!tableData[0]?.Items || !tableData[1]?.Items || !tableData[2]?.Items) {
+    return <span>Error: The data does not match the expected procedure.</span>;
+  }
+
+  const schoolars = tableData[0]?.Items as ISchoolboysItem[];
+  const columns = tableData[1]?.Items as IColumnsItem[];
+  const lessons = tableData[2]?.Items as ILessonsItem[];
 
   const handleChangePage = (_event: unknown, newPage: number) => setPage(newPage);
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
