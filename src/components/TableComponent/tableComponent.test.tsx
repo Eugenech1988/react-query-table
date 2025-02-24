@@ -5,7 +5,7 @@ import { SchoolarProvider } from '@/SchoolarContext.tsx';
 import TableComponent from './index.tsx';
 import * as useDataHooks from '@/hooks/useData.ts';
 import { QueryClient, QueryClientProvider, UseMutationResult } from '@tanstack/react-query';
-import { IColumnsItem, ILessonsData, ILessonsItem, ISchoolboysItem } from '@/types';
+import { ILessonsData, ILessonsItem } from '@/types';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -52,7 +52,8 @@ const mockUseTableData = (data = mockData, isLoading = false, isError = false) =
   vi.spyOn(useDataHooks, 'useTableData').mockReturnValue({
     isLoading,
     isError,
-    data: data.map(item => item.Items as ISchoolboysItem[] | IColumnsItem[] | ILessonsItem[]),
+    // @ts-ignore
+    data,
   });
 };
 
