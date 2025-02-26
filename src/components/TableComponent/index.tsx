@@ -18,12 +18,12 @@ const TableComponent = () => {
   const { isLoading, isError, data } = useTableData();
 
   if (isLoading) return <span>Loading...</span>;
-  if (isError || isRemoveError || isAddError) return <span>Error: {removeError?.message || addError?.message || 'occurred'}</span>;
+  if (isError || isRemoveError || isAddError) return <Typography color={'error'}>Error: {removeError?.message || addError?.message || 'occurred'}</Typography>;
 
   const tableData = data as unknown as [ITableData, ITableData, ITableData];
 
   if (!tableData[0]?.Items || !tableData[1]?.Items || !tableData[2]?.Items) {
-    return <span>Error: The data does not match the expected procedure.</span>;
+    return <Typography color={'error'}>Error: The data does not match the expected procedure.</Typography>;
   }
 
   const schoolars = tableData[0]?.Items as ISchoolboysItem[];
