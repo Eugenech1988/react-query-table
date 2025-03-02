@@ -22,7 +22,7 @@ const TableComponent = () => {
 
   const tableData = data as unknown as [ITableData, ITableData, ITableData];
 
-  if (!tableData[0]?.Items || !tableData[1]?.Items || !tableData[2]?.Items) {
+  if (tableData.some(data => !data?.Items)) {
     return <Typography color={'error'}>Error: The data does not match the expected procedure.</Typography>;
   }
 
